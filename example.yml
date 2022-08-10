@@ -1,0 +1,52 @@
+---
+not_null:
+  columns:
+    - card_number
+    - card_ref_number
+    - payment_transaction_id
+    - payment_amount
+    - balance_type_code
+    - balance_type_name
+    - actual_balance
+    - adjusted_amount
+    - remaining_balance
+    - report_day
+not_in_set:
+  columns:
+    - payment_amount
+  value_set:
+    - 0
+in_set:
+  - columns:
+    - balance_type_code
+    value_set:
+      - AF
+      - CA
+      - EP
+      - FC
+      - LP
+      - OF
+      - PR
+  - columns:
+    - balance_type_name
+    value_set:
+      - Annual Fee
+      - Cash Advance
+      - Extra Payment
+      - Financial Charges
+      - Late Payment Fee
+      - Other Fees
+      - Purchase Balance
+regex:
+  columns:
+    - actual_balance
+    - adjusted_amount
+    - remaining_balance
+  regex: '[0-9]+(\.[0-9][0-9]?)?'
+between:
+  columns:
+    - actual_balance
+    - adjusted_amount
+    - remaining_balance
+  min_value: -99999
+  max_value: 999999
