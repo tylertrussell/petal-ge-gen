@@ -7,38 +7,20 @@ import enum
 import json
 
 
-class Expectation(ABC):
-
-    EXPECTATION_TYPE = None
-
-    @classmethod
-    def make(cls, **kwargs):
-        data = {
-            "expectation_type": cls.EXPECTATION_TYPE,
-            "kwargs": kwargs,
-        }
-        return data
-
-
-class NotNull(Expectation):
-    EXPECTATION_TYPE = "expect_column_values_to_not_be_null"
-
-
-class InSet(Expectation):
-    EXPECTATION_TYPE = "expect_column_values_to_be_in_set"
-
-
-class Between(Expectation):
-    EXPECTATION_TYPE = "expect_column_values_to_be_between"
-
-
-class Regex(Expectation):
-    EXPECTATION_TYPE = "expect_column_values_to_match_regex"
-
-
 EXPECTATIONS = {
-    'not_null': NotNull,
-    'in_set': InSet,
-    'between': Between,
-    'regex': Regex,
+    'not_null': 'expect_column_values_to_not_be_null',
+    'in_set': 'expect_column_values_to_be_in_set',
+    'not_in_set': 'expect_column_values_to_not_be_in_set',
+    'between': 'expect_column_values_to_be_between',
+    'regex': 'expect_column_values_to_match_regex',
 }
+
+
+def make(friendly_expectation_type, **kwargs):
+    ge_expectation_type = EXPECTATIONS.get(friendly_expectation_type)
+    assert ge_expectation_type is not None
+    data = {
+        "expectation_type": ge_expectation_type,
+        "kwargs": kwargs,
+    }
+    return data

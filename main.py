@@ -6,8 +6,7 @@ import os
 import sys
 import yaml
 
-from expectations import EXPECTATIONS
-
+import expectations
 
 def parse_args():
     parser = argparse.ArgumentParser()
@@ -30,23 +29,28 @@ def main():
 
     data = []
 
-    for expectation_type, config in expectations_config.items():
+    for expectation_type, config_list in expectations_config.items():
 
-        expectation_cls = EXPECTATIONS.get(expectation_type)
-        if not expectation_cls:
-            print(f"{expectation_type} doesn't have a supported class; skipping")
-            continue
+        if not isinstance(config_list, list):
+            config_list = [config_list]
 
-        columns = config.pop('columns')
-        if not columns:
-            print(f"{expectation_type} doesn't have columns; skipping")
-            continue
+        for config in config_list:
 
-        for column in columns:
-            _kwargs = {'column': column, **config}
-            data.append(expectation_cls.make(**_kwargs))
+            columns = config.pop('columns')
+            if not columns:
+                print(f"{expectation_type} doesn't have columns; skipping")
+                continue
 
-    print(data)
+            for column in columns:
+                _kwargs = {'column': column, **config}
+                try:
+                    expectation = expectations.make(expectation_type, **_kwargs)
+                except AssertionError:
+                    print(f"{expectation_type} failed; is it missing from the EXPECTATIONS map?")
+                    break
+
+                data.append(expectation)
+
     print(json.dumps(data, indent=2))
 
 
